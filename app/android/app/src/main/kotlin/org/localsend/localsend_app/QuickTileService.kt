@@ -38,7 +38,7 @@ class QuickTileService : TileService() {
         }
 
         qsTile.icon =
-            Icon.createWithResource(this, R.mipmap.ic_launcher_quicktile_foreground)
+            Icon.createWithResource(this, R.drawable.ic_custom_qtile)
         qsTile.label = packageManager.getApplicationLabel(application.applicationInfo)
         qsTile.updateTile()
     }
