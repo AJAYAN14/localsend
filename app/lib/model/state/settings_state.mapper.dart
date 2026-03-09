@@ -147,6 +147,11 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     'advancedSettings',
     _$advancedSettings,
   );
+  static bool _$autoCopyText(SettingsState v) => v.autoCopyText;
+  static const Field<SettingsState, bool> _f$autoCopyText = Field(
+    'autoCopyText',
+    _$autoCopyText,
+  );
 
   @override
   final MappableFields<SettingsState> fields = const {
@@ -176,6 +181,7 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     #shareViaLinkAutoAccept: _f$shareViaLinkAutoAccept,
     #discoveryTimeout: _f$discoveryTimeout,
     #advancedSettings: _f$advancedSettings,
+    #autoCopyText: _f$autoCopyText,
   };
 
   static SettingsState _instantiate(DecodingData data) {
@@ -206,6 +212,7 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
       shareViaLinkAutoAccept: data.dec(_f$shareViaLinkAutoAccept),
       discoveryTimeout: data.dec(_f$discoveryTimeout),
       advancedSettings: data.dec(_f$advancedSettings),
+      autoCopyText: data.dec(_f$autoCopyText),
     );
   }
 
@@ -302,6 +309,7 @@ abstract class SettingsStateCopyWith<$R, $In extends SettingsState, $Out>
     bool? shareViaLinkAutoAccept,
     int? discoveryTimeout,
     bool? advancedSettings,
+    bool? autoCopyText,
   });
   SettingsStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -360,6 +368,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
     bool? shareViaLinkAutoAccept,
     int? discoveryTimeout,
     bool? advancedSettings,
+    bool? autoCopyText,
   }) => $apply(
     FieldCopyWithData({
       if (showToken != null) #showToken: showToken,
@@ -391,6 +400,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
         #shareViaLinkAutoAccept: shareViaLinkAutoAccept,
       if (discoveryTimeout != null) #discoveryTimeout: discoveryTimeout,
       if (advancedSettings != null) #advancedSettings: advancedSettings,
+      if (autoCopyText != null) #autoCopyText: autoCopyText,
     }),
   );
   @override
@@ -430,6 +440,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
     ),
     discoveryTimeout: data.get(#discoveryTimeout, or: $value.discoveryTimeout),
     advancedSettings: data.get(#advancedSettings, or: $value.advancedSettings),
+    autoCopyText: data.get(#autoCopyText, or: $value.autoCopyText),
   );
 
   @override

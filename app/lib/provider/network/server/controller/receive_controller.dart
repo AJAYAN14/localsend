@@ -17,6 +17,8 @@ import 'package:common/model/session_status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/state/send/send_session_state.dart';
 import 'package:localsend_app/model/state/server/receive_session_state.dart';
 import 'package:localsend_app/model/state/server/receiving_file.dart';
@@ -279,6 +281,43 @@ class ReceiveController {
       }
 
       final message = server.getState().session?.message;
+      if (message != null && settings.autoCopyText) {
+        await server.ref
+            .redux(receiveHistoryProvider)
+            .dispatchAsync(
+              AddHistoryEntryAction(
+                entryId: _uuid.v4(),
+                fileName: message,
+                fileType: FileType.text,
+                path: null,
+                savedToGallery: false,
+                isMessage: true,
+                fileSize: utf8.encode(message).length,
+                senderAlias: server.getState().session!.senderAlias,
+                timestamp: DateTime.now().toUtc(),
+              ),
+            );
+        unawaited(Clipboard.setData(ClipboardData(text: message)));
+
+        try {
+          ScaffoldMessenger.of(Routerino.context).showSnackBar(
+            SnackBar(content: Text(t.general.copiedToClipboard)),
+          );
+
+          unawaited(
+            showDialog(
+              context: Routerino.context,
+              builder: (_) => const _TextCopiedDialog(),
+            ),
+          );
+        } catch (e) {
+          _logger.warning('Could not show context dialogs', e);
+        }
+
+        closeSession();
+        return await request.respondJson(204);
+      }
+
       if (message != null) {
         // Message already received
         await server.ref
@@ -877,6 +916,55 @@ extension on ReceiveSessionState {
             errorMessage: errorMessage,
           ),
         ),
+    );
+  }
+}
+
+class _TextCopiedDialog extends StatefulWidget {
+  const _TextCopiedDialog();
+
+  @override
+  State<_TextCopiedDialog> createState() => _TextCopiedDialogState();
+}
+
+class _TextCopiedDialogState extends State<_TextCopiedDialog> {
+  int _secondsRemaining = 2; // Auto-close after 2 seconds
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        _secondsRemaining--;
+      });
+      if (_secondsRemaining <= 0) {
+        timer.cancel();
+        if (mounted) {
+          Routerino.context.pop();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(t.general.copiedToClipboard),
+      content: Text(t.general.copiedToClipboard), // Simple status text
+      actions: [
+        TextButton(
+          onPressed: () => context.pop(),
+          child: Text(t.general.close),
+        ),
+      ],
     );
   }
 }

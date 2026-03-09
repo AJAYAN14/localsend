@@ -250,6 +250,13 @@ class SettingsTab extends StatelessWidget {
                           await ref.notifier(settingsProvider).setSaveToHistory(b);
                         },
                       ),
+                      _BooleanEntry(
+                        label: 'Auto copy text to clipboard', // Hardcoded for now
+                        value: vm.settings.autoCopyText,
+                        onChanged: (b) async {
+                          await ref.notifier(settingsProvider).setAutoCopyText(b);
+                        },
+                      ),
                     ],
                   ),
                   if (vm.advanced)
