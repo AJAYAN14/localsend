@@ -251,12 +251,20 @@ class SettingsTab extends StatelessWidget {
                         },
                       ),
                       _BooleanEntry(
-                        label: 'Auto copy text to clipboard', // Hardcoded for now
+                        label: t.settingsTab.receive.autoCopyText,
                         value: vm.settings.autoCopyText,
                         onChanged: (b) async {
                           await ref.notifier(settingsProvider).setAutoCopyText(b);
                         },
                       ),
+                      if (checkPlatform([TargetPlatform.android]))
+                        _BooleanEntry(
+                          label: t.settingsTab.receive.autoInstallApk,
+                          value: vm.settings.autoInstallApk,
+                          onChanged: (b) async {
+                            await ref.notifier(settingsProvider).setAutoInstallApk(b);
+                          },
+                        ),
                     ],
                   ),
                   if (vm.advanced)

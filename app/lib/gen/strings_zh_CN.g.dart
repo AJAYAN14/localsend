@@ -903,6 +903,10 @@ class _TranslationsSettingsTabReceiveZhCn extends TranslationsSettingsTabReceive
   String get saveToGallery => '保存到相册';
   @override
   String get saveToHistory => '保存到历史记录';
+  @override
+  String get autoCopyText => '自动把文本复制到剪贴板';
+  @override
+  String get autoInstallApk => '收到 APK 后自动拉起安装';
 }
 
 // Path: settingsTab.send

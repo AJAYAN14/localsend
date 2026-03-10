@@ -120,7 +120,9 @@
       "destination": "Save to folder",
       "downloads": "(Downloads)",
       "saveToGallery": "Save media to gallery",
-      "saveToHistory": "Save to history"
+      "saveToHistory": "Save to history",
+      "autoCopyText": "Auto copy text to clipboard",
+      "autoInstallApk": "Auto install APK after receiving"
     },
     "send": {
       "title": "Send",

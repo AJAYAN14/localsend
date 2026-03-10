@@ -91,6 +91,7 @@ const _deviceModel = 'ls_device_model';
 const _shareViaLinkAutoAccept = 'ls_share_via_link_auto_accept';
 const _advancedSettingsKey = 'ls_advanced_settings';
 const _autoCopyText = 'ls_auto_copy_text';
+const _autoInstallApk = 'ls_auto_install_apk';
 
 final persistenceProvider = Provider<PersistenceService>((ref) {
   throw Exception('persistenceProvider not initialized');
@@ -418,6 +419,14 @@ class PersistenceService {
 
   Future<void> setAutoCopyText(bool autoCopyText) async {
     await _prefs.setBool(_autoCopyText, autoCopyText);
+  }
+
+  bool isAutoInstallApk() {
+    return _prefs.getBool(_autoInstallApk) ?? false;
+  }
+
+  Future<void> setAutoInstallApk(bool autoInstallApk) async {
+    await _prefs.setBool(_autoInstallApk, autoInstallApk);
   }
 
   bool isQuickSave() {

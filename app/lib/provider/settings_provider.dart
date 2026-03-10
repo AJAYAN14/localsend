@@ -71,6 +71,7 @@ class SettingsService extends PureNotifier<SettingsState> {
     discoveryTimeout: _persistence.getDiscoveryTimeout(),
     advancedSettings: _persistence.getAdvancedSettingsEnabled(),
     autoCopyText: _persistence.isAutoCopyText(),
+    autoInstallApk: _persistence.isAutoInstallApk(),
   );
 
   Future<void> setAlias(String alias) async {
@@ -168,14 +169,24 @@ class SettingsService extends PureNotifier<SettingsState> {
     await _persistence.setQuickSave(quickSave);
     state = state.copyWith(
       quickSave: quickSave,
+      quickSaveFromFavorites: quickSave ? false : state.quickSaveFromFavorites,
     );
+
+    if (quickSave) {
+      await _persistence.setQuickSaveFromFavorites(false);
+    }
   }
 
   Future<void> setQuickSaveFromFavorites(bool quickSaveFromFavorites) async {
     await _persistence.setQuickSaveFromFavorites(quickSaveFromFavorites);
     state = state.copyWith(
       quickSaveFromFavorites: quickSaveFromFavorites,
+      quickSave: quickSaveFromFavorites ? false : state.quickSave,
     );
+
+    if (quickSaveFromFavorites) {
+      await _persistence.setQuickSave(false);
+    }
   }
 
   Future<void> setReceivePin(String? receivePin) async {
@@ -253,6 +264,13 @@ class SettingsService extends PureNotifier<SettingsState> {
     await _persistence.setAutoCopyText(autoCopyText);
     state = state.copyWith(
       autoCopyText: autoCopyText,
+    );
+  }
+
+  Future<void> setAutoInstallApk(bool autoInstallApk) async {
+    await _persistence.setAutoInstallApk(autoInstallApk);
+    state = state.copyWith(
+      autoInstallApk: autoInstallApk,
     );
   }
 }

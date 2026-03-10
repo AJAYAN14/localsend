@@ -1046,6 +1046,12 @@ class TranslationsSettingsTabReceiveEn {
 
   /// en: 'Save to history'
   String get saveToHistory => 'Save to history';
+
+  /// en: 'Auto copy text to clipboard'
+  String get autoCopyText => 'Auto copy text to clipboard';
+
+  /// en: 'Auto install APK after receiving'
+  String get autoInstallApk => 'Auto install APK after receiving';
 }
 
 // Path: settingsTab.send

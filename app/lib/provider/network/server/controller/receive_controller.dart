@@ -42,6 +42,7 @@ import 'package:localsend_app/provider/selection/selected_sending_files_provider
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/util/native/directories.dart';
 import 'package:localsend_app/util/native/file_saver.dart';
+import 'package:localsend_app/util/native/open_file.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/util/native/tray_helper.dart';
 import 'package:localsend_app/util/rust.dart';
@@ -667,6 +668,23 @@ class ReceiveController {
         });
       }
       _logger.info('Received all files.');
+
+      if (settings.autoInstallApk && checkPlatform([TargetPlatform.android])) {
+        final apkFiles = session.files.values.where(
+          (f) => f.status == FileStatus.finished && (f.file.fileType == FileType.apk || f.file.fileName.toLowerCase().endsWith('.apk')),
+        );
+        for (final apk in apkFiles) {
+          if (apk.path != null) {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              try {
+                openFile(Routerino.context, FileType.apk, apk.path!);
+              } catch (e) {
+                _logger.warning('Could not auto-install APK', e);
+              }
+            });
+          }
+        }
+      }
     }
 
     return server.getState().session?.files[fileId]?.status == FileStatus.finished

@@ -36,6 +36,7 @@ class SettingsState with SettingsStateMappable {
   final int discoveryTimeout;
   final bool advancedSettings;
   final bool autoCopyText; // automatically copy received text to clipboard
+  final bool autoInstallApk; // automatically install APK files after receiving
 
   const SettingsState({
     required this.showToken,
@@ -65,5 +66,6 @@ class SettingsState with SettingsStateMappable {
     required this.discoveryTimeout,
     required this.advancedSettings,
     required this.autoCopyText,
+    required this.autoInstallApk,
   });
 }
