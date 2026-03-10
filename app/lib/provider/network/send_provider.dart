@@ -10,6 +10,7 @@ import 'package:common/model/file_type.dart';
 import 'package:common/model/session_status.dart';
 import 'package:common/util/sleep.dart';
 import 'package:flutter/material.dart';
+import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/cross_file.dart';
 import 'package:localsend_app/model/send_mode.dart';
 import 'package:localsend_app/model/state/send/send_session_state.dart';
@@ -18,6 +19,7 @@ import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/pages/progress_page.dart';
 import 'package:localsend_app/pages/send_page.dart';
 import 'package:localsend_app/provider/device_info_provider.dart';
+import 'package:localsend_app/provider/foreground_service_provider.dart';
 import 'package:localsend_app/provider/http_provider.dart';
 import 'package:localsend_app/provider/progress_provider.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
@@ -317,6 +319,13 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
       state: (s) => s?.copyWith(startTime: DateTime.now().millisecondsSinceEpoch),
     );
 
+    // Start foreground service for background transfer
+    await ref
+        .notifier(foregroundServiceProvider)
+        .startTransferService(
+          title: t.foregroundService.sending,
+        );
+
     final queue = Queue<SendingFile>()..addAll(files.values);
     final concurrency = ref.read(parentIsolateProvider).uploadIsolateCount;
     _logger.info('Sending files using $concurrency concurrent isolates');
@@ -343,10 +352,10 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
 
     await Future.wait(futures);
 
-    _finish(sessionId: sessionId);
+    await _finish(sessionId: sessionId);
   }
 
-  void _finish({required String sessionId}) {
+  Future<void> _finish({required String sessionId}) async {
     final sessionState = state[sessionId];
     if (sessionState == null) {
       return;
@@ -354,8 +363,14 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
 
     if (state[sessionId]!.status != SessionStatus.sending) {
       _logger.info('Transfer was canceled.');
+      // Stop foreground service without completion notification (was canceled)
+      await ref.notifier(foregroundServiceProvider).stopTransferService();
     } else {
       final hasError = sessionState.files.values.any((file) => file.status == FileStatus.failed);
+
+      // Stop foreground service: show completion notification only if no errors
+      await ref.notifier(foregroundServiceProvider).stopTransferService(showCompletion: !hasError);
+
       if (!hasError && sessionState.background == true) {
         // close session because everything is fine and it is in background
         closeSession(sessionId);
@@ -466,6 +481,16 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
               fileId: file.file.id,
               progress: progress,
             );
+
+        // Update foreground service notification
+        final percent = (progress * 100).round();
+        ref
+            .notifier(foregroundServiceProvider)
+            .updateProgress(
+              fileName: file.file.fileName,
+              percent: percent,
+              isSending: true,
+            );
       }
 
       // set progress to 100% when successfully finished
@@ -496,7 +521,7 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
     if (isRetry) {
       final state = this.state[sessionId];
       if (state != null && state.files.values.map((e) => e.status).isFinishedOrError) {
-        _finish(sessionId: sessionId);
+        await _finish(sessionId: sessionId);
         return false;
       }
     }
@@ -535,6 +560,9 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
     } catch (e) {
       _logger.warning('Error while canceling session', e);
     }
+
+    // Stop foreground service on cancel
+    ref.notifier(foregroundServiceProvider).stopTransferService();
 
     // finally, close session locally
     closeSession(sessionId);

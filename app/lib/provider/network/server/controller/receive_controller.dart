@@ -28,6 +28,7 @@ import 'package:localsend_app/pages/progress_page.dart';
 import 'package:localsend_app/pages/receive_page.dart';
 import 'package:localsend_app/provider/device_info_provider.dart';
 import 'package:localsend_app/provider/favorites_provider.dart';
+import 'package:localsend_app/provider/foreground_service_provider.dart';
 import 'package:localsend_app/provider/http_provider.dart';
 import 'package:localsend_app/provider/logging/discovery_logs_provider.dart';
 import 'package:localsend_app/provider/network/nearby_devices_provider.dart';
@@ -443,6 +444,13 @@ class ReceiveController {
       );
     }
 
+    // Start foreground service for background transfer
+    server.ref
+        .notifier(foregroundServiceProvider)
+        .startTransferService(
+          title: t.foregroundService.receiving,
+        );
+
     final files = {
       for (final file in server.getState().session!.files.values.where((f) => f.token != null)) file.file.id: file.token,
     };
@@ -551,12 +559,23 @@ class ReceiveController {
         stream: request,
         onProgress: (savedBytes) {
           if (receivingFile.file.size != 0) {
+            final progress = savedBytes / receivingFile.file.size;
             server.ref
                 .notifier(progressProvider)
                 .setProgress(
                   sessionId: receiveState.sessionId,
                   fileId: fileId,
-                  progress: savedBytes / receivingFile.file.size,
+                  progress: progress,
+                );
+
+            // Update foreground service notification
+            final percent = (progress * 100).round();
+            server.ref
+                .notifier(foregroundServiceProvider)
+                .updateProgress(
+                  fileName: receivingFile.file.fileName,
+                  percent: percent,
+                  isSending: false,
                 );
           }
         },
@@ -668,6 +687,9 @@ class ReceiveController {
         });
       }
       _logger.info('Received all files.');
+
+      // Stop foreground service: show completion notification only if no errors
+      server.ref.notifier(foregroundServiceProvider).stopTransferService(showCompletion: !hasError);
 
       if (settings.autoInstallApk && checkPlatform([TargetPlatform.android])) {
         final apkFiles = session.files.values.where(
@@ -873,6 +895,9 @@ class ReceiveController {
     }
 
     closeSession();
+
+    // Stop foreground service on cancel
+    server.ref.notifier(foregroundServiceProvider).stopTransferService();
 
     // TODO: cancel incoming requests (https://github.com/dart-lang/shelf/issues/319)
     // restartServer(alias: tempState.alias, port: tempState.port);

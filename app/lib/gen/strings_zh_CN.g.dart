@@ -89,6 +89,8 @@ class TranslationsZhCn extends Translations {
   late final _TranslationsAssetPickerZhCn assetPicker = _TranslationsAssetPickerZhCn._(_root);
   @override
   late final _TranslationsNetworkInterfacesPageZhCn networkInterfacesPage = _TranslationsNetworkInterfacesPageZhCn._(_root);
+  @override
+  late final _TranslationsForegroundServiceZhCn foregroundService = _TranslationsForegroundServiceZhCn._(_root);
 }
 
 // Path: general
@@ -758,6 +760,29 @@ class _TranslationsNetworkInterfacesPageZhCn extends TranslationsNetworkInterfac
   String get whitelist => '白名单';
   @override
   String get blacklist => '黑名单';
+}
+
+// Path: foregroundService
+class _TranslationsForegroundServiceZhCn extends TranslationsForegroundServiceEn {
+  _TranslationsForegroundServiceZhCn._(TranslationsZhCn root) : this._root = root, super.internal(root);
+
+  final TranslationsZhCn _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get channelName => '文件传输';
+  @override
+  String get channelDescription => '后台传输文件时显示的通知';
+  @override
+  String get sending => '正在发送文件';
+  @override
+  String get receiving => '正在接收文件';
+  @override
+  String get preparing => '正在准备传输...';
+  @override
+  String get completed => '传输完成 ✅';
+  @override
+  String get completedBody => '所有文件已成功传输。';
 }
 
 // Path: receiveTab.infoBox

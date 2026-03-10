@@ -67,27 +67,31 @@ class _ProgressPageState extends State<ProgressPage> with Refena {
 
     // init
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        unawaited(WakelockPlus.enable());
-      } catch (_) {}
+      // On Android, the foreground service provides its own wakelock,
+      // so we skip WakelockPlus to avoid redundancy.
+      if (!checkPlatform([TargetPlatform.android])) {
+        try {
+          unawaited(WakelockPlus.enable());
+        } catch (_) {}
 
-      // Periodically call WakelockPlus.enable() to keep the screen awake
-      _wakelockPlusTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-        final finished =
-            ref.read(serverProvider)?.session?.files.values.map((e) => e.status).isFinishedOrSkipped ??
-            ref.read(sendProvider)[widget.sessionId]?.files.values.map((e) => e.status).isFinishedOrSkipped ??
-            true;
-        if (finished) {
-          timer.cancel();
-          try {
-            unawaited(WakelockPlus.disable());
-          } catch (_) {}
-        } else {
-          try {
-            unawaited(WakelockPlus.enable());
-          } catch (_) {}
-        }
-      });
+        // Periodically call WakelockPlus.enable() to keep the screen awake
+        _wakelockPlusTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+          final finished =
+              ref.read(serverProvider)?.session?.files.values.map((e) => e.status).isFinishedOrSkipped ??
+              ref.read(sendProvider)[widget.sessionId]?.files.values.map((e) => e.status).isFinishedOrSkipped ??
+              true;
+          if (finished) {
+            timer.cancel();
+            try {
+              unawaited(WakelockPlus.disable());
+            } catch (_) {}
+          } else {
+            try {
+              unawaited(WakelockPlus.enable());
+            } catch (_) {}
+          }
+        });
+      }
 
       if (ref.read(settingsProvider).autoFinish) {
         _finishTimer = Timer.periodic(const Duration(seconds: 1), (timer) {

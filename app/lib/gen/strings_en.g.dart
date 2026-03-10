@@ -72,6 +72,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
   late final TranslationsTrayEn tray = TranslationsTrayEn.internal(_root);
   late final TranslationsWebEn web = TranslationsWebEn.internal(_root);
   late final TranslationsAssetPickerEn assetPicker = TranslationsAssetPickerEn.internal(_root);
+  late final TranslationsForegroundServiceEn foregroundService = TranslationsForegroundServiceEn.internal(_root);
 }
 
 // Path: general
@@ -863,6 +864,36 @@ class TranslationsAssetPickerEn {
 
   /// en: 'count'
   String get sUnitAssetCountLabel => 'count';
+}
+
+// Path: foregroundService
+class TranslationsForegroundServiceEn {
+  TranslationsForegroundServiceEn.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'File Transfer'
+  String get channelName => 'File Transfer';
+
+  /// en: 'Notification shown during file transfer in background'
+  String get channelDescription => 'Notification shown during file transfer in background';
+
+  /// en: 'Sending files'
+  String get sending => 'Sending files';
+
+  /// en: 'Receiving files'
+  String get receiving => 'Receiving files';
+
+  /// en: 'Preparing transfer...'
+  String get preparing => 'Preparing transfer...';
+
+  /// en: 'Transfer Complete ✅'
+  String get completed => 'Transfer Complete ✅';
+
+  /// en: 'All files have been transferred successfully.'
+  String get completedBody => 'All files have been transferred successfully.';
 }
 
 // Path: receiveTab.infoBox

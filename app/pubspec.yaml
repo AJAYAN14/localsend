@@ -27,6 +27,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_displaymode: 0.6.0
+  flutter_foreground_task: 9.2.1
   flutter_localizations:
     sdk: flutter
   flutter_markdown: 0.7.4+2
@@ -65,7 +66,7 @@ dependencies:
   saf_stream: 0.10.0
   screen_retriever: 0.2.0
   share_handler: 0.0.22
-  shared_preferences: 2.5.2
+  shared_preferences: 2.5.3
   shared_preferences_platform_interface: any
   slang: 4.9.0
   slang_flutter: 4.9.0

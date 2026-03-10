@@ -532,5 +532,14 @@
     "preview": "预览",
     "whitelist": "白名单",
     "blacklist": "黑名单"
+  },
+  "foregroundService": {
+    "channelName": "文件传输",
+    "channelDescription": "后台传输文件时显示的通知",
+    "sending": "正在发送文件",
+    "receiving": "正在接收文件",
+    "preparing": "正在准备传输...",
+    "completed": "传输完成",
+    "completedBody": "所有文件已成功传输。"
   }
 }

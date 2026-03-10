@@ -533,5 +533,14 @@
     "sActionUseCameraHint": "use camera",
     "sNameDurationLabel": "duration",
     "sUnitAssetCountLabel": "count"
+  },
+  "foregroundService": {
+    "channelName": "File Transfer",
+    "channelDescription": "Notification shown during file transfer in background",
+    "sending": "Sending files",
+    "receiving": "Receiving files",
+    "preparing": "Preparing transfer...",
+    "completed": "Transfer Complete",
+    "completedBody": "All files have been transferred successfully."
   }
 }
